@@ -7,6 +7,7 @@ import com.github.catvod.R;
 import com.github.catvod.spider.Init;
 import com.github.catvod.spider.Paper;
 import com.github.catvod.spider.UpYun;
+import com.github.catvod.spider.YiSo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,16 +22,19 @@ public class MainActivity extends Activity {
 
         new Thread(() -> {
             System.out.println("可以开始调试了哦！！！！！！！！！！");
+
+            //********************************
             UpYun  yun = new UpYun();
             yun.init(MainActivity.this, "2d56a5a9834947568a5a1299971bb975");
             String str;
             try {
-                str = yun.searchContent("人生之路", true);
+                str = yun.searchContent("他是谁", true);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
             System.out.println(str);
 
+            //********************************
             Paper paper = new Paper();
             paper.init(MainActivity.this, "2d56a5a9834947568a5a1299971bb975");
             String str1;
@@ -40,6 +44,18 @@ public class MainActivity extends Activity {
                 throw new RuntimeException(e);
             }
             System.out.println(str1);
+
+
+            //********************************
+            YiSo yiSo = new YiSo();
+          //  yiSo.init(MainActivity.this, "2d56a5a9834947568a5a1299971bb975");
+            String str2;
+            try {
+                str2 = yiSo.searchContent("长月烬明", true);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println(str2);
 
         }).start();
     }

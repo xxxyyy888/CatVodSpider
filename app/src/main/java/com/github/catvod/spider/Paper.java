@@ -5,20 +5,11 @@ import android.content.Context;
 import com.github.catvod.bean.Result;
 import com.github.catvod.bean.Vod;
 import com.github.catvod.crawler.SpiderDebug;
-import com.github.catvod.net.Cronet;
 import com.github.catvod.net.OkHttp;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-
-import org.chromium.base.task.SequencedTaskRunnerImpl;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 public class Paper extends Ali {
 
@@ -51,10 +42,13 @@ public class Paper extends Ali {
             vod.setVodPic("https://pic.rmb.bdstatic.com/bjh/1d0b02d0f57f0a42201f92caba5107ed.jpeg");
             vod.setVodRemarks(jsonArray.getJSONObject(i).getString("alititle"));
             arrayList.add(vod);
+
         }
         return Result.string(arrayList);
 
     }
+
+
 
 
 }

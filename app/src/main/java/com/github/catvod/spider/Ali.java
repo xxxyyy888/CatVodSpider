@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import com.github.catvod.ali.API;
 import com.github.catvod.bean.Result;
 import com.github.catvod.crawler.Spider;
+import com.github.catvod.crawler.SpiderDebug;
 import com.github.catvod.utils.ReflectUtil;
 
 import java.lang.reflect.Method;
@@ -40,6 +41,7 @@ public class Ali extends Spider {
         String shareId = matcher.group(1);
         String fileId = matcher.groupCount() == 3 ? matcher.group(3) : "";
         API.get().setShareId(shareId);
+        System.out.println(Result.string(API.get().getVod(url, fileId)));
         return Result.string(API.get().getVod(url, fileId));
     }
 

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.github.catvod.bean.Result;
 import com.github.catvod.bean.Vod;
+import com.github.catvod.crawler.SpiderDebug;
 import com.github.catvod.net.OkHttp;
 import com.github.catvod.utils.Utils;
 
@@ -71,6 +72,7 @@ public class Zhaozy extends Ali {
     public String searchContent(String key, boolean quick) throws Exception {
         String url = siteUrl + "so?filename=" + URLEncoder.encode(key);
         Document doc = Jsoup.parse(OkHttp.string(url, getHeader()));
+       // System.out.println(doc.toString());
         List<Vod> list = new ArrayList<>();
         for (Element element : doc.select("div.li_con div.news_text")) {
             String href = element.select("div.news_text a").attr("href");
@@ -89,11 +91,9 @@ public class Zhaozy extends Ali {
         return Result.string(list);
     }
 
-
     public void setUsername(String username) {
         this.username = username;
     }
-
 
     public void setPassword(String password) {
         this.password = password;

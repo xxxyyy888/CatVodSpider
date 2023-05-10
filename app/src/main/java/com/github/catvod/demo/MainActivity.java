@@ -25,7 +25,7 @@ public class MainActivity extends Activity {
             System.out.println("可以开始调试了哦！！！！！！！！！！");
 
             //********************************
-            UpYun  yun = new UpYun();
+      /*      UpYun yun = new UpYun();
             yun.init(MainActivity.this, "2d56a5a9834947568a5a1299971bb975");
             String str;
             try {
@@ -49,7 +49,7 @@ public class MainActivity extends Activity {
 
             //********************************
             YiSo yiSo = new YiSo();
-          //  yiSo.init(MainActivity.this, "2d56a5a9834947568a5a1299971bb975");
+            //  yiSo.init(MainActivity.this, "2d56a5a9834947568a5a1299971bb975");
             String str2;
             try {
                 str2 = yiSo.searchContent("长月烬明", true);
@@ -57,12 +57,12 @@ public class MainActivity extends Activity {
                 throw new RuntimeException(e);
             }
             System.out.println(str2);
-
+*/
             //********************************
             Zhaozy zzy = new Zhaozy();
             zzy.setUsername("yunshuche");
             zzy.setPassword("11223344");
-            //  yiSo.init(MainActivity.this, "2d56a5a9834947568a5a1299971bb975");
+            //   zzy.init(MainActivity.this, "2d56a5a9834947568a5a1299971bb975");
             String str3;
             try {
                 str3 = zzy.searchContent("尘封十三载", true);

@@ -26,7 +26,7 @@ public class MainActivity extends Activity {
 
             //********************************
       /*      UpYun yun = new UpYun();
-            yun.init(MainActivity.this, "2d56a5a9834947568a5a1299971bb975");
+
             String str;
             try {
                 str = yun.searchContent("他是谁", true);
@@ -37,7 +37,7 @@ public class MainActivity extends Activity {
 
             //********************************
             Paper paper = new Paper();
-            paper.init(MainActivity.this, "2d56a5a9834947568a5a1299971bb975");
+
             String str1;
             try {
                 str1 = paper.searchContent("人生之路", true);
@@ -49,7 +49,7 @@ public class MainActivity extends Activity {
 
             //********************************
             YiSo yiSo = new YiSo();
-            //  yiSo.init(MainActivity.this, "2d56a5a9834947568a5a1299971bb975");
+
             String str2;
             try {
                 str2 = yiSo.searchContent("长月烬明", true);
@@ -62,10 +62,11 @@ public class MainActivity extends Activity {
             Zhaozy zzy = new Zhaozy();
             zzy.setUsername("yunshuche");
             zzy.setPassword("11223344");
-            //   zzy.init(MainActivity.this, "2d56a5a9834947568a5a1299971bb975");
+
             String str3;
             try {
                 str3 = zzy.searchContent("尘封十三载", true);
+
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

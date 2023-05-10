@@ -241,7 +241,7 @@ public class API {
             shareToken = new JSONObject(result).getString("share_token");
         } catch (Exception e) {
             e.printStackTrace();
-            Init.show("來晚啦，該分享已失效。");
+            Init.show("来晚啦，该分享已失效。");
         }
     }
 

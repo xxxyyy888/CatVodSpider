@@ -58,14 +58,23 @@ public class API {
     private OAuth oauth;
     private User user;
 
+    /*
+     * volatile:声明这个对象易变（可能被多个线程使用），Java内存模型负责各个线程的工作区与主存区的该字段的值保持同步，即一致性。
+     * */
     private static class Loader {
         static volatile API INSTANCE = new API();
     }
 
+    /*
+     * 返回一个本类的对象
+     * */
     public static API get() {
         return Loader.INSTANCE;
     }
 
+    /*
+     * 构造方法，初始化成员变量
+     * */
     private API() {
         tempIds = new ArrayList<>();
         oauth = OAuth.objectFrom(Prefers.getString("aliyundrive_oauth"));
@@ -79,10 +88,26 @@ public class API {
         quality.put("流暢", "LD");
     }
 
+    /*
+     * access_token访问令牌，它是一个用来访问受保护资源的凭证
+     * refresh_token刷新令牌，它是一个用来获取access token的凭证
+     * access_token时效短，refresh_token时效长
+     * access_token过期后，可以使用refresh_token重新获取，而refresh_token过期后就只能重新授权了
+     * 本方法，给refreshToken赋值
+     * */
     public void setRefreshToken(String token) {
         this.refreshToken = token;
     }
 
+    /*
+     * "Object]“是定义了一个一维的对象，这个Object是任何对象的父类，也就是说可以转换成任何的类型。
+     * 举例：
+     * Object[]object = new Object[3]；
+     * object[0]= new String（“12312"）；
+     * object[1]= new String[]{"String1"，"String2"}；
+     * object[2]= new Date（）；
+     * 解释：也就是说Object类型之后可以给任意类型的值或者对象赋值给当前的object对象，而不需要强制类型转换，方便操作
+     * */
     public Object[] getToken() {
         Object[] result = new Object[3];
         result[0] = 200;
@@ -97,6 +122,9 @@ public class API {
         checkAccessToken();
     }
 
+    /*
+     * 返回访问header
+     * */
     public HashMap<String, String> getHeader() {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("User-Agent", Utils.CHROME);
@@ -104,6 +132,9 @@ public class API {
         return headers;
     }
 
+    /*
+     * 返回认证用header
+     * */
     private HashMap<String, String> getHeaderAuth() {
         HashMap<String, String> headers = getHeader();
         headers.put("authorization", user.getAuthorization());
@@ -111,6 +142,9 @@ public class API {
         return headers;
     }
 
+    /*
+     *
+     * */
     private HashMap<String, String> getHeaderOpen() {
         HashMap<String, String> headers = getHeader();
         headers.put("authorization", oauth.getAuthorization());
@@ -121,7 +155,7 @@ public class API {
         url = "https://api.nn.ci/alist/ali_open/" + url;
         OkResult result = OkHttp.postJson(url, body.toString(), getHeader());
         if (isManyRequest(result.getBody())) return "";
-        if (result.getCode() == 200) return result.getBody();
+        if (result.getCode() == 200) return result.getBody();         //200表示访问成功
         throw new Exception(result.getBody());
     }
 
@@ -130,10 +164,14 @@ public class API {
         return OkHttp.postJson(url, body.toString(), getHeader()).getBody();
     }
 
+    /*
+     *进行认证，检测url是否以https开头,返回result.
+     * */
     private String auth(String url, String json, boolean retry) {
         url = url.startsWith("https") ? url : "https://api.aliyundrive.com/" + url;
         OkResult result = OkHttp.postJson(url, json, getHeaderAuth());
-        if (retry && result.getCode() != 200 && refreshAccessToken()) return auth(url, json, false);
+        if (retry && result.getCode() != 200 && refreshAccessToken())
+            return auth(url, json, false);   //post不成功则重试
         return result.getBody();
     }
 
@@ -144,6 +182,9 @@ public class API {
         return result.getBody();
     }
 
+    /*
+     *认证结果中包括"Too Many Requests".则清空token
+     * */
     private boolean isManyRequest(String result) {
         if (!result.contains("Too Many Requests")) return false;
         Init.show("洗洗睡吧，Too Many Requests。");
@@ -152,11 +193,17 @@ public class API {
         return true;
     }
 
+    /*
+     *超时处理
+     * */
     private boolean onTimeout() {
         stopService();
         return false;
     }
 
+    /*
+     *如果AccessToken为空，则调用refreshAccessToken（）
+     * */
     public void checkAccessToken() {
         if (user.getAccessToken().isEmpty()) refreshAccessToken();
     }
@@ -257,7 +304,8 @@ public class API {
         List<String> episode = new ArrayList<>();
         List<String> playUrl = new ArrayList<>();
         Sorter.sort(files);
-        for (Item file : files) episode.add(file.getDisplayName() + "$" + file.getFileId() + findSubs(file.getName(), subMap));
+        for (Item file : files)
+            episode.add(file.getDisplayName() + "$" + file.getFileId() + findSubs(file.getName(), subMap));
         for (int i = 0; i < playFrom.size(); i++) playUrl.add(TextUtils.join("#", episode));
         Vod vod = new Vod();
         vod.setVodId(url);
@@ -266,7 +314,7 @@ public class API {
         vod.setVodName(object.getString("share_name"));
         vod.setVodPlayUrl(TextUtils.join("$$$", playUrl));
         vod.setVodPlayFrom(TextUtils.join("$$$", playFrom));
-        vod.setTypeName("阿里雲盤");
+        vod.setTypeName("阿里云盘");
         return vod;
     }
 
@@ -309,7 +357,8 @@ public class API {
         if (array.length() == 0) return "";
         JSONObject fileInfo = array.getJSONObject(0);
         if (fileInfo.getString("type").equals("folder")) return fileInfo.getString("file_id");
-        if (fileInfo.getString("type").equals("file") && fileInfo.getString("category").equals("video")) return "root";
+        if (fileInfo.getString("type").equals("file") && fileInfo.getString("category").equals("video"))
+            return "root";
         return "";
     }
 
@@ -318,7 +367,8 @@ public class API {
         List<String> subs = subMap.get(name);
         if (subs != null && subs.size() > 0) return combineSubs(subs);
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<String, List<String>> entry : subMap.entrySet()) sb.append(combineSubs(entry.getValue()));
+        for (Map.Entry<String, List<String>> entry : subMap.entrySet())
+            sb.append(combineSubs(entry.getValue()));
         return sb.toString();
     }
 
@@ -455,7 +505,8 @@ public class API {
         Init.execute(() -> {
             if (text.startsWith("http")) setToken(OkHttp.string(text));
             else if (text.length() == 32) setToken(text);
-            else if (text.contains(":")) setToken(OkHttp.string("http://" + text + "/proxy?do=ali&type=token"));
+            else if (text.contains(":"))
+                setToken(OkHttp.string("http://" + text + "/proxy?do=ali&type=token"));
         });
     }
 

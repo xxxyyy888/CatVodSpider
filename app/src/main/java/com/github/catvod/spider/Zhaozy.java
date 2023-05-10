@@ -72,14 +72,14 @@ public class Zhaozy extends Ali {
     public String searchContent(String key, boolean quick) throws Exception {
         String url = siteUrl + "so?filename=" + URLEncoder.encode(key);
         Document doc = Jsoup.parse(OkHttp.string(url, getHeader()));
-       // System.out.println(doc.toString());
+        // System.out.println(doc.toString());
         List<Vod> list = new ArrayList<>();
         for (Element element : doc.select("div.li_con div.news_text")) {
             String href = element.select("div.news_text a").attr("href");
             Matcher matcher = regexVid.matcher(href);
             if (!matcher.find()) continue;
             String name = element.select("div.news_text a h3").text();
-            if (!name.contains(key)) continue;
+            if (!name.contains(key)) continue;    //如果name中不包括key，直接进行下次循环
             String remark = element.select("div.news_text a p").text().split("\\|")[1].split("：")[1];
             Vod vod = new Vod();
             vod.setVodPic("https://inews.gtimg.com/newsapp_bt/0/13263837859/1000");

@@ -15,11 +15,16 @@ public class OAuth {
     @SerializedName("refresh_token")
     private String refreshToken;
 
+    /*
+    * 把json字符串转为OAuth对象
+    **/
     public static OAuth objectFrom(String str) {
         OAuth item = new Gson().fromJson(str, OAuth.class);
         return item == null ? new OAuth() : item;
     }
-
+    /*
+     * 返回Token类型
+     **/
     public String getTokenType() {
         return TextUtils.isEmpty(tokenType) ? "" : tokenType;
     }
@@ -31,22 +36,30 @@ public class OAuth {
     public String getRefreshToken() {
         return TextUtils.isEmpty(refreshToken) ? "" : refreshToken;
     }
-
+    /*
+     * 返回授权
+     **/
     public String getAuthorization() {
         return getTokenType() + " " + getAccessToken();
     }
-
+    /*
+     * 清除Token
+     **/
     public OAuth clean() {
         this.refreshToken = "";
         this.accessToken = "";
         return this;
     }
-
+    /*
+     * 调用Prefers保存Token
+     **/
     public OAuth save() {
         Prefers.put("aliyundrive_oauth", toString());
         return this;
     }
-
+    /*
+     * 将本对象转换成json字符串
+     **/
     @Override
     public String toString() {
         return new Gson().toJson(this);

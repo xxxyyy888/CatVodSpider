@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.github.catvod.R;
+import com.github.catvod.ali.API;
 import com.github.catvod.spider.Init;
 import com.github.catvod.spider.Paper;
 import com.github.catvod.spider.UpYun;
@@ -71,6 +72,9 @@ public class MainActivity extends Activity {
                 throw new RuntimeException(e);
             }
             System.out.println(str3);
+
+
+
 
         }).start();
     }

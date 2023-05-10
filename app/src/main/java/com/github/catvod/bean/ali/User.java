@@ -19,11 +19,17 @@ public class User {
     @SerializedName("refresh_token")
     private String refreshToken;
 
+    /*
+     * 把json字符串转为User对象
+     **/
     public static User objectFrom(String str) {
         User item = new Gson().fromJson(str, User.class);
         return item == null ? new User() : item;
     }
 
+    /*
+     * 各成员变量的get and set方法
+     **/
     public String getDriveId() {
         return TextUtils.isEmpty(driveId) ? "" : driveId;
     }
@@ -52,17 +58,24 @@ public class User {
         return getTokenType() + " " + getAccessToken();
     }
 
+    /*
+     * 清除Token
+     **/
     public User clean() {
         this.refreshToken = "";
         this.accessToken = "";
         return this;
     }
-
+    /*
+     * 保存Token
+     **/
     public User save() {
         Prefers.put("aliyundrive_user", toString());
         return this;
     }
-
+    /*
+     * 将本对象转换成json字符串
+     **/
     @Override
     public String toString() {
         return new Gson().toJson(this);

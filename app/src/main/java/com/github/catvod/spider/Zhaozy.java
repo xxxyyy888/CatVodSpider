@@ -69,7 +69,7 @@ public class Zhaozy extends Ali {
 
     @Override
     public String searchContent(String key, boolean quick) throws Exception {
-        String url = siteUrl + "sos?filename=" + URLEncoder.encode(key);
+        String url = siteUrl + "so?filename=" + URLEncoder.encode(key);
         Document doc = Jsoup.parse(OkHttp.string(url, getHeader()));
         List<Vod> list = new ArrayList<>();
         for (Element element : doc.select("div.li_con div.news_text")) {
@@ -89,4 +89,13 @@ public class Zhaozy extends Ali {
         return Result.string(list);
     }
 
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

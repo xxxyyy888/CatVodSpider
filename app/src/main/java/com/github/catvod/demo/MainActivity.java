@@ -8,6 +8,7 @@ import com.github.catvod.spider.Init;
 import com.github.catvod.spider.Paper;
 import com.github.catvod.spider.UpYun;
 import com.github.catvod.spider.YiSo;
+import com.github.catvod.spider.Zhaozy;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,6 +57,19 @@ public class MainActivity extends Activity {
                 throw new RuntimeException(e);
             }
             System.out.println(str2);
+
+            //********************************
+            Zhaozy zzy = new Zhaozy();
+            zzy.setUsername("yunshuche");
+            zzy.setPassword("11223344");
+            //  yiSo.init(MainActivity.this, "2d56a5a9834947568a5a1299971bb975");
+            String str3;
+            try {
+                str3 = zzy.searchContent("尘封十三载", true);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println(str3);
 
         }).start();
     }

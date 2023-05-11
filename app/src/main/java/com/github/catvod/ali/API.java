@@ -26,6 +26,7 @@ import com.github.catvod.net.OkHttp;
 import com.github.catvod.net.OkResult;
 import com.github.catvod.spider.Init;
 import com.github.catvod.spider.Proxy;
+import com.github.catvod.utils.FileUtil;
 import com.github.catvod.utils.Prefers;
 import com.github.catvod.utils.QRCode;
 import com.github.catvod.utils.Utils;
@@ -34,6 +35,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -72,13 +74,22 @@ public class API {
         return Loader.INSTANCE;
     }
 
+    public File getUserCache() {
+        return FileUtil.getCacheFile("aliyundrive_user");
+    }
+
+    public File getOAuthCache() {
+        return FileUtil.getCacheFile("aliyundrive_oauth");
+    }
     /*
      * 构造方法，初始化成员变量
      * */
     private API() {
         tempIds = new ArrayList<>();
-        oauth = OAuth.objectFrom(Prefers.getString("aliyundrive_oauth"));
-        user = User.objectFrom(Prefers.getString("aliyundrive_user"));
+      //  oauth = OAuth.objectFrom(Prefers.getString("aliyundrive_oauth"));
+      //  user = User.objectFrom(Prefers.getString("aliyundrive_user"));
+        oauth = OAuth.objectFrom(FileUtil.read(getOAuthCache()));
+        user = User.objectFrom(FileUtil.read(getUserCache()));
         quality = new HashMap<>();
         quality.put("4K", "UHD");
         quality.put("2k", "QHD");

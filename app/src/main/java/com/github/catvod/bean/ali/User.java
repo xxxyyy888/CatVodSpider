@@ -2,6 +2,8 @@ package com.github.catvod.bean.ali;
 
 import android.text.TextUtils;
 
+import com.github.catvod.ali.API;
+import com.github.catvod.utils.FileUtil;
 import com.github.catvod.utils.Prefers;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -70,7 +72,7 @@ public class User {
      * 保存Token
      **/
     public User save() {
-        Prefers.put("aliyundrive_user", toString());
+        FileUtil.write(API.get().getUserCache(), toString());
         return this;
     }
     /*

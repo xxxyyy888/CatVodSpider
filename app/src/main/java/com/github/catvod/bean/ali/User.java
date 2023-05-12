@@ -56,6 +56,10 @@ public class User {
         this.refreshToken = refreshToken;
     }
 
+
+    /*
+    * 返回TokenType+AccessToken
+    * */
     public String getAuthorization() {
         return getTokenType() + " " + getAccessToken();
     }

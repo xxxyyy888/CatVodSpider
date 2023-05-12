@@ -62,25 +62,38 @@ public class API {
     private User user;
 
     private static class Loader {
-        static volatile API INSTANCE = new API();
+        static volatile API INSTANCE = new API();   //实例化对象时，会调用无参构造API()，初始化变量
     }
 
+
+    /*
+     *返回当前API类的对象
+     * */
     public static API get() {
         return Loader.INSTANCE;
     }
 
+
+    /*
+     *获取应用程序配置的缓存目录下的文件aliyundrive_user文件
+     * */
     public File getUserCache() {
         return FileUtil.getCacheFile("aliyundrive_user");
     }
 
+
+    /*
+     *获取应用程序配置的缓存目录下的文件aliyundrive_oauth文件
+     * */
     public File getOAuthCache() {
         return FileUtil.getCacheFile("aliyundrive_oauth");
     }
 
+
     private API() {
         tempIds = new ArrayList<>();
-        oauth = OAuth.objectFrom(FileUtil.read(getOAuthCache()));
-        user = User.objectFrom(FileUtil.read(getUserCache()));
+        oauth = OAuth.objectFrom(FileUtil.read(getOAuthCache()));//将读取aliyundrive_oauth文件内字符串转成OAuth类的对象。
+        user = User.objectFrom(FileUtil.read(getUserCache()));//将读取aliyundrive_user文件内字符串转成User类的对象
         quality = new HashMap<>();
         quality.put("4K", "UHD");
         quality.put("2k", "QHD");
@@ -90,25 +103,41 @@ public class API {
         quality.put("流暢", "LD");
     }
 
+    /*
+     *设置refreshToken
+     * */
     public void setRefreshToken(String token) {
         this.refreshToken = token;
     }
 
+
+
+    /*
+     *获取token，Object对象为所有类的父类，所以可以存储任何类型
+     * 返回的是一个Object数组
+     * */
     public Object[] getToken() {
         Object[] result = new Object[3];
-        result[0] = 200;
-        result[1] = "text/plain";
-        result[2] = new ByteArrayInputStream(user.getRefreshToken().getBytes());
+        result[0] = 200;     //数值型200
+        result[1] = "text/plain";  //字符串
+        result[2] = new ByteArrayInputStream(user.getRefreshToken().getBytes());  //取aliyundrive_user里面refreshToken
         return result;
     }
 
+
+
     public void setShareId(String shareId) {
-        if (!getOAuthCache().exists()) oauth.clean().save();
-        if (!getUserCache().exists()) user.clean().save();
-        this.shareId = shareId;
+        if (!getOAuthCache().exists()) oauth.clean().save();  //如果不存在aliyundrive_oauth文件，清空oauth对象再保存
+        if (!getUserCache().exists()) user.clean().save();//如果不存在aliyundrive_user文件，清空user对象再保存
+        this.shareId = shareId;  //成员变量shareId分享码赋值
         refreshShareToken();
     }
 
+
+    /*
+     *
+     * 返回headers
+     * */
     public HashMap<String, String> getHeader() {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("User-Agent", Utils.CHROME);
@@ -116,27 +145,39 @@ public class API {
         return headers;
     }
 
+
+    /*
+     *
+     * 返回用于认证的headers
+     * */
     private HashMap<String, String> getHeaderAuth() {
         HashMap<String, String> headers = getHeader();
-        headers.put("authorization", user.getAuthorization());
+        headers.put("authorization", user.getAuthorization()); //getAuthorization()方法返回TokenType+AccessToken
         headers.put("x-share-token", shareToken);
         return headers;
     }
 
+
+
     private HashMap<String, String> getHeaderOpen() {
         HashMap<String, String> headers = getHeader();
-        headers.put("authorization", oauth.getAuthorization());
+        headers.put("authorization", oauth.getAuthorization());//getAuthorization()方法返回TokenType+AccessTok
         return headers;
     }
+
+
 
     private boolean alist(String url, JSONObject body) {
         OkResult result = OkHttp.postJson(url, body.toString(), getHeader());
         SpiderDebug.log(result.getCode() + "," + url + "," + result.getBody());
         if (isManyRequest(result.getBody())) return false;
-        oauth = OAuth.objectFrom(result.getBody()).save();
+        oauth = OAuth.objectFrom(result.getBody()).save();  //保存
         return true;
     }
 
+   /*
+   * POST方法访问,在url前面加上https://api.aliyundrive.com/
+   * */
     private String post(String url, JSONObject body) {
         url = url.startsWith("https") ? url : "https://api.aliyundrive.com/" + url;
         OkResult result = OkHttp.postJson(url, body.toString(), getHeader());
@@ -144,6 +185,11 @@ public class API {
         return result.getBody();
     }
 
+
+    /*
+     * POST返回的状态码是401的意思：Authorization认证不通过
+     * 429 表示Too Many Requests
+     * */
     private String auth(String url, String json, boolean retry) {
         url = url.startsWith("https") ? url : "https://api.aliyundrive.com/" + url;
         OkResult result = OkHttp.postJson(url, json, getHeaderAuth());
@@ -173,6 +219,8 @@ public class API {
         return false;
     }
 
+
+
     private void refreshShareToken() {
         try {
             SpiderDebug.log("refreshShareToken...");
@@ -186,6 +234,8 @@ public class API {
             Init.show("來晚啦，該分享已失效。");
         }
     }
+
+
 
     private boolean refreshAccessToken() {
         try {
@@ -205,7 +255,7 @@ public class API {
             e.printStackTrace();
             user.clean().save();
             stopService();
-            startFlow();
+            startFlow();    //会判断是手机则弹出对话框输入token,不是手机则担示扫码
             return true;
         } finally {
             while (user.getAccessToken().isEmpty()) SystemClock.sleep(250);
@@ -220,6 +270,7 @@ public class API {
             body.put("scope", "user:base,file:all:read,file:all:write");
             String url = "https://open.aliyundrive.com/oauth/users/authorize?client_id=" + BuildConfig.CLIENT_ID + "&redirect_uri=https://alist.nn.ci/tool/aliyundrive/callback&scope=user:base,file:all:read,file:all:write&state=";
             String result = auth(url, body.toString(), true);
+           // SpiderDebug.log(result);
             return oauthRedirect(Code.objectFrom(result).getCode());
         } catch (Exception e) {
             e.printStackTrace();
@@ -477,6 +528,10 @@ public class API {
         }
     }
 
+    /*
+    *
+    * 弹出对话窗，請輸入Token
+    * */
     private void showInput() {
         try {
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

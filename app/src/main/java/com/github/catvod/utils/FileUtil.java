@@ -12,10 +12,10 @@ import java.io.InputStreamReader;
 public class FileUtil {
 
     public static File getCacheDir() {
-        return Init.context().getExternalCacheDir();
+        return Init.context().getExternalCacheDir();  //获取应用程序配置的缓存目录
     }
 
-    public static File getCacheFile(String fileName) {
+    public static File getCacheFile(String fileName) {  //获取应用程序配置的缓存目录下的文件
         return new File(getCacheDir(), fileName);
     }
 

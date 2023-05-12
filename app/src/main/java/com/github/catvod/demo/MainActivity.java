@@ -15,7 +15,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MainActivity extends Activity {
-
+/*
+* onCreate的方法是在Activity创建时被系统调用，是一个Activity生命周期的开始。
+* getApplicationContext(): 返回应用的上下文，生命周期是整个应用，应用摧毁，它才摧毁。
+* setContentView的作用就是把自己的布局文件放在Activity中显示
+* */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

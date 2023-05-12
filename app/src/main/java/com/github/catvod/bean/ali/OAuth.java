@@ -53,7 +53,7 @@ public class OAuth {
         return this;
     }
     /*
-     * 调用Prefers保存Token
+     * 保存Token
      **/
     public OAuth save() {
         FileUtil.write(API.get().getOAuthCache(), toString());

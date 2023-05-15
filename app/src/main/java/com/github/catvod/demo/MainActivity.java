@@ -7,6 +7,7 @@ import com.github.catvod.R;
 import com.github.catvod.ali.API;
 import com.github.catvod.spider.Init;
 import com.github.catvod.spider.Paper;
+import com.github.catvod.spider.Tugou;
 import com.github.catvod.spider.UpYun;
 import com.github.catvod.spider.YiSo;
 import com.github.catvod.spider.Zhaozy;
@@ -64,7 +65,7 @@ public class MainActivity extends Activity {
             System.out.println(str2);
 */
             //********************************
-            Zhaozy zzy = new Zhaozy();
+  /*         Zhaozy zzy = new Zhaozy();
             zzy.setUsername("yunshuche");
             zzy.setPassword("11223344");
 
@@ -76,9 +77,16 @@ public class MainActivity extends Activity {
                 throw new RuntimeException(e);
             }
             System.out.println(str3);
+*/
+            Tugou tg=new Tugou();
+            String str4;
+            try {
+                str4=tg.searchContent("他是谁",true);
 
-
-
+            }catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println(str4);
 
         }).start();
     }

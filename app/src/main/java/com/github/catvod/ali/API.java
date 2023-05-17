@@ -231,7 +231,7 @@ public class API {
             shareToken = new JSONObject(result).getString("share_token");
         } catch (Exception e) {
             e.printStackTrace();
-            Init.show("來晚啦，該分享已失效。");
+            Init.show("来晚啦，该分享已失效。");
         }
     }
 
@@ -315,7 +315,7 @@ public class API {
         List<Item> files = new ArrayList<>();
         LinkedHashMap<String, List<String>> subMap = new LinkedHashMap<>();
         listFiles(new Item(getParentFileId(fileId, object)), files, subMap);
-        List<String> playFrom = Arrays.asList("原畫", "超清", "高清");
+        List<String> playFrom = Arrays.asList("原画", "超清", "高清");
         List<String> episode = new ArrayList<>();
         List<String> playUrl = new ArrayList<>();
         Sorter.sort(files);
@@ -328,7 +328,7 @@ public class API {
         vod.setVodName(object.getString("share_name"));
         vod.setVodPlayUrl(TextUtils.join("$$$", playUrl));
         vod.setVodPlayFrom(TextUtils.join("$$$", playFrom));
-        vod.setTypeName("阿里雲盤");
+        vod.setTypeName("阿里云盘");
         return vod;
     }
 
@@ -563,7 +563,9 @@ public class API {
         Data data = Data.objectFrom(OkHttp.string(url)).getContent().getData();
         Init.run(() -> showQRCode(data));
     }
-
+/*
+* 显示二维码
+* */
     private void showQRCode(Data data) {
         try {
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(Utils.dp2px(240), Utils.dp2px(240));

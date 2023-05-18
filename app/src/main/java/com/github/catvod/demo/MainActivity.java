@@ -89,11 +89,11 @@ public class MainActivity extends Activity {
 */
 
 
-            AppYsV2 aidi1 = new AppYsV2();
-            aidi1.init(MainActivity.this,"http://kuying.kuyouk.top:9528/api.php/app/");
+            AppYsV2 kuying = new AppYsV2();
+            kuying.init(MainActivity.this,"http://kuying.kuyouk.top:9528/api.php/app/");
             //      String json = aidi1.homeContent(true);
             //       System.out.println(json);
-            String str4 = aidi1.searchContent("他是谁", false);
+            String str4 = kuying.searchContent("他是谁", false);
             //   System.out.println(str4);
 
             JSONObject homeContent = null;
@@ -114,7 +114,7 @@ public class MainActivity extends Activity {
 
                        //     System.out.println(aidi1.detailContent(ids));
 
-                            JSONObject detailContent = new JSONObject(aidi1.detailContent(ids)).getJSONArray("list").getJSONObject(0);
+                            JSONObject detailContent = new JSONObject(kuying.detailContent(ids)).getJSONArray("list").getJSONObject(0);
 
                             String[] playFlags = detailContent.getString("vod_play_from").split("\\$\\$\\$");
 
@@ -123,7 +123,7 @@ public class MainActivity extends Activity {
                             for (int j = 0; j < playFlags.length; j++) {
                                 String pu = playUrls[j].split("#")[0].split("\\$")[1];
                                // System.out.println(pu);
-                               System.out.println(aidi1.playerContent(playFlags[j], pu, new ArrayList<>()));
+                               System.out.println(kuying.playerContent(playFlags[j], pu, new ArrayList<>()));
                             }
                         } catch (Throwable th) {
 

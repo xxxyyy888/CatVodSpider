@@ -99,8 +99,8 @@ public class API {
         quality.put("2k", "QHD");
         quality.put("超清", "FHD");
         quality.put("高清", "HD");
-        quality.put("標清", "SD");
-        quality.put("流暢", "LD");
+        quality.put("标清", "SD");
+        quality.put("流畅", "LD");
     }
 
     /*

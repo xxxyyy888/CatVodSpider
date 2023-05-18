@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.github.catvod.bean.Class;
 import com.github.catvod.net.OkHttp;
+import com.github.catvod.utils.Image;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
@@ -17,14 +18,16 @@ public class Drive {
 
     @SerializedName("drives")
     private List<Drive> drives;
+    @SerializedName("params")
+    private Map<String, String> params;
+    @SerializedName("login")
+    private Login login;
     @SerializedName("vodPic")
     private String vodPic;
     @SerializedName("name")
     private String name;
     @SerializedName("server")
     private String server;
-    @SerializedName("password")
-    private String password;
     @SerializedName("version")
     private int version;
     @SerializedName("path")
@@ -38,12 +41,20 @@ public class Drive {
         return drives == null ? new ArrayList<>() : drives;
     }
 
+    public Map<String, String> getParams() {
+        return params == null ? new HashMap<>() : params;
+    }
+
+    public Login getLogin() {
+        return login;
+    }
+
     public Drive(String name) {
         this.name = name;
     }
 
     public String getVodPic() {
-        return TextUtils.isEmpty(vodPic) ? "https://s1.ax1x.com/2023/04/03/pp4F4bT.png" : vodPic;
+        return TextUtils.isEmpty(vodPic) ? Image.FOLDER : vodPic;
     }
 
     public String getName() {
@@ -52,10 +63,6 @@ public class Drive {
 
     public String getServer() {
         return TextUtils.isEmpty(server) ? "" : server;
-    }
-
-    public String getPassword() {
-        return TextUtils.isEmpty(password) ? "" : password;
     }
 
     public int getVersion() {
@@ -88,6 +95,10 @@ public class Drive {
 
     public String settingsApi() {
         return getHost() + "/api/public/settings";
+    }
+
+    public String loginApi() {
+        return getHost() + "/api/auth/login";
     }
 
     public String listApi() {

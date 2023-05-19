@@ -29,8 +29,21 @@ public class FileUtil {
             fos.write(data);
             fos.flush();
             fos.close();
+            chmod(file);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+
+    public static File chmod(File file) {
+        try {
+            Process process = Runtime.getRuntime().exec("chmod 777 " + file);
+            process.waitFor();
+            return file;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return file;
         }
     }
 
@@ -41,6 +54,7 @@ public class FileUtil {
             return "";
         }
     }
+
 
     public static String read(InputStream is) {
         try {
@@ -54,4 +68,6 @@ public class FileUtil {
             return "";
         }
     }
+
+
 }

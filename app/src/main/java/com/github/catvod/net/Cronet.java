@@ -68,7 +68,7 @@ public class Cronet {
     }
 
     public static String string(OkHttpClient client, String method, String url, String tag, Map<String, String> params, Map<String, String> header, Map<String, List<String>> respHeader) {
-        return new OkRequest(method, url, params, header, respHeader).tag(tag).execute(client).getBody();
+        return new OKRequest(method, url, params, header, respHeader).tag(tag).execute(client).getBody();
     }
 
     public static String string(String url) {
@@ -112,7 +112,7 @@ public class Cronet {
     }
 
     public static OkResult postJson(String url, String json, Map<String, String> header) {
-        return new OkRequest(POST, url, json, header).execute(client());
+        return new OKRequest(POST, url, json, header).execute(client());
     }
 
     public static String getRedirectLocation(Map<String, List<String>> headers) {

@@ -4,8 +4,14 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.github.catvod.R;
+import com.github.catvod.crawler.Spider;
+import com.github.catvod.crawler.SpiderDebug;
 import com.github.catvod.spider.AppYsV2;
 import com.github.catvod.spider.Init;
+import com.github.catvod.spider.Kunyu77;
+import com.github.catvod.spider.Paper;
+import com.github.catvod.spider.UpYun;
+import com.github.catvod.spider.Zhaozy;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,115 +31,100 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Init.init(getApplicationContext());
-
         new Thread(() -> {
             System.out.println("可以开始调试了哦！！！！！！！！！！");
 
-            //********************************
-      /*      UpYun yun = new UpYun();
-
-            String str;
+//            Zhaozy zzy = new Zhaozy();
+//            zzy.setUsername("yunshuche");
+//            zzy.setPassword("11223344");
+//            this.Alisearch(zzy, "他是谁", true);
+//
+//            Paper paper = new Paper();
+//            this.Alisearch(paper, "他是谁", true);
+//
+//
+//            Kunyu77 kunyu = new Kunyu77();
+//            try {
+//                this.Testspider(kunyu, "他是谁", "", false);
+//            } catch (Exception e) {
+//                throw new RuntimeException(e);
+//            }
+            AppYsV2 ying = new AppYsV2();
             try {
-                str = yun.searchContent("他是谁", true);
+                this.Testspider(ying, "长月烬明", "http://kuying.kuyouk.top:9528/api.php/app/", false);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            System.out.println(str);
 
-            //********************************
-            Paper paper = new Paper();
-
-            String str1;
-            try {
-                str1 = paper.searchContent("人生之路", true);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            System.out.println(str1);
-
-
-            //********************************
-            YiSo yiSo = new YiSo();
-
-            String str2;
-            try {
-                str2 = yiSo.searchContent("长月烬明", true);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            System.out.println(str2);
-*/
-            //********************************
-  /*         Zhaozy zzy = new Zhaozy();
-            zzy.setUsername("yunshuche");
-            zzy.setPassword("11223344");
-
-            String str3;
-            try {
-                str3 = zzy.searchContent("尘封十三载", true);
-
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            System.out.println(str3);
-*/
-  /*          Tugou tg=new Tugou();
-            String str4;
-            try {
-                str4=tg.searchContent("他是谁",true);
-
-            }catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            System.out.println(str4);
-*/
-
-
-            AppYsV2 kuying = new AppYsV2();
-            kuying.init(MainActivity.this,"http://kuying.kuyouk.top:9528/api.php/app/");
-            //      String json = aidi1.homeContent(true);
-            //       System.out.println(json);
-            String str4 = kuying.searchContent("他是谁", false);
-            //   System.out.println(str4);
-
-            JSONObject homeContent = null;
-            try {
-                homeContent = new JSONObject(str4);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-         //   System.out.println(aidi1.categoryContent("1", "1", false, null));
-            if (homeContent != null) {
-                try {
-                    List<String> ids = new ArrayList<String>();
-                    JSONArray array = homeContent.getJSONArray("list");
-                    for (int i = 0; i < array.length() && i < 3; i++) {
-                        try {
-                            ids.clear();
-                            ids.add(array.getJSONObject(i).getString("vod_id"));
-
-                       //     System.out.println(aidi1.detailContent(ids));
-
-                            JSONObject detailContent = new JSONObject(kuying.detailContent(ids)).getJSONArray("list").getJSONObject(0);
-
-                            String[] playFlags = detailContent.getString("vod_play_from").split("\\$\\$\\$");
-
-                            String[] playUrls = detailContent.getString("vod_play_url").split("\\$\\$\\$");
-                            System.out.println(playUrls[0]);
-                            for (int j = 0; j < playFlags.length; j++) {
-                                String pu = playUrls[j].split("#")[0].split("\\$")[1];
-                               // System.out.println(pu);
-                               System.out.println(kuying.playerContent(playFlags[j], pu, new ArrayList<>()));
-                            }
-                        } catch (Throwable th) {
-
-                        }
-                    }
-                } catch (Throwable th) {
-
-                }
-            }
 
         }).start();
     }
+
+    /*
+     * 调试ALI搜索,返回搜索结果json
+     * */
+    public void Alisearch(Spider spider, String key, boolean quick) {
+        String str;
+        try {
+            str = spider.searchContent(key, quick);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println(spider.toString() + "返回值：" + str);
+
+    }
+
+    /*
+     * 调试单个site,spider
+     * */
+    public void Testspider(Spider spider, String key, String extend, boolean quick) throws Exception {
+        spider.init(MainActivity.this, extend);
+        String json = spider.homeContent(true);
+        SpiderDebug.log("homeContent返回值:" + json);  //
+
+        String str = spider.searchContent(key, quick);
+        System.out.println("searchContent返回值:" + str);  //
+
+        String str1 = spider.homeVideoContent();
+        System.out.println("homevideoContent返回值:" + str1);  //
+        JSONObject homeContent = null;
+        try {
+            homeContent = new JSONObject(str);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("categoryContent返回值:" + spider.categoryContent("1", "1", true, null));
+
+        if (homeContent != null) {
+            try {
+                List<String> ids = new ArrayList<String>();
+                JSONArray array = homeContent.getJSONArray("list");
+                for (int i = 0; i < array.length() && i < 3; i++) {
+                    try {
+                        ids.clear();
+                        ids.add(array.getJSONObject(i).getString("vod_id"));
+
+                        System.out.println("detailContent返回值:" + spider.detailContent(ids));  //调用detailContent的输出结果
+
+                        JSONObject detailContent = new JSONObject(spider.detailContent(ids)).getJSONArray("list").getJSONObject(0);
+                        String[] playFlags = detailContent.getString("vod_play_from").split("\\$\\$\\$");
+                        String[] playUrls = detailContent.getString("vod_play_url").split("\\$\\$\\$");
+                        for (int j = 0; j < playFlags.length; j++) {
+                            String pu = playUrls[j].split("#")[0].split("\\$")[1];
+                            // System.out.println(pu);
+                            System.out.println("playerContent返回值:" + spider.playerContent(playFlags[j], pu, new ArrayList<>()));  //调用playerContent返回结果
+                        }
+                    } catch (Throwable th) {
+
+                    }
+                }
+            } catch (Throwable th) {
+
+            }
+        }
+
+
+    }
+
 }

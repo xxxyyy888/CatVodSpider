@@ -15,7 +15,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-class OkRequest {
+class OKRequest {
 
     private final Map<String, List<String>> respHeader;
     private final Map<String, String> header;
@@ -26,15 +26,15 @@ class OkRequest {
     private String url;
     private Object tag;
 
-    OkRequest(String method, String url, Map<String, String> params, Map<String, String> header, Map<String, List<String>> respHeader) {
+    OKRequest(String method, String url, Map<String, String> params, Map<String, String> header, Map<String, List<String>> respHeader) {
         this(method, url, null, params, header, respHeader);
     }
 
-    OkRequest(String method, String url, String json, Map<String, String> header) {
+    OKRequest(String method, String url, String json, Map<String, String> header) {
         this(method, url, json, null, header, null);
     }
 
-    private OkRequest(String method, String url, String json, Map<String, String> params, Map<String, String> header, Map<String, List<String>> respHeader) {
+    private OKRequest(String method, String url, String json, Map<String, String> params, Map<String, String> header, Map<String, List<String>> respHeader) {
         this.url = url;
         this.json = json;
         this.method = method;
@@ -44,7 +44,7 @@ class OkRequest {
         getInstance();
     }
 
-    public OkRequest tag(Object tag) {
+    public OKRequest tag(Object tag) {
         this.tag = tag;
         return this;
     }

@@ -285,7 +285,7 @@ public class AppYsV2 extends Spider {
         try {
             String apiUrl = getApiUrl();
             String url = getPlayUrlPrefix(apiUrl) + ids.get(0);
-            SpiderDebug.log(url);
+          //  SpiderDebug.log(url);
             String json = desc(OkHttp.string(url, getHeaders(url)), (byte) 3);
             JSONObject obj = new JSONObject(json);
             JSONObject result = new JSONObject();

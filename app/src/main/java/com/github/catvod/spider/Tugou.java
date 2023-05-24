@@ -8,68 +8,52 @@ import com.github.catvod.net.OkHttp;
 import com.github.catvod.utils.Utils;
 
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
-import java.io.ByteArrayInputStream;
-import java.net.URLEncoder;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+/**
+ * @author zhixc
+ */
+public class Tugou extends Ali {
 
-public class Tugou extends Ali{
-    private final Pattern regexVid = Pattern.compile("(\\S+)");
+    private final String URL = "https://tugousou.com";
+
+    private Map<String, String> getHeader() {
+        Map<String, String> header = new HashMap<>();
+        header.put("User-Agent", Utils.CHROME);
+        header.put("Host", "tugousou.com");
+        header.put("Origin", URL);
+        header.put("Referer", URL + "/");
+        return header;
+    }
 
     @Override
     public void init(Context context, String extend) {
         super.init(context, extend);
     }
 
-
-
     @Override
-    public String searchContent(String key, boolean quick) throws Exception {
-      String url="https://www.tugousou.com/search" ;
-        LinkedHashMap<String,String> linkedHashMap = new LinkedHashMap<>();
-        linkedHashMap.put("User-Agent", Utils.CHROME);
-        linkedHashMap.put("Origin", "https://www.tugousou.com");
-        linkedHashMap.put("Referer", "https://www.tugousou.com");
-
-        LinkedHashMap<String,String> linkedHashMap2 = new LinkedHashMap<>();
-        linkedHashMap2.put("action", "search");
-        linkedHashMap2.put("from", "web");
-        linkedHashMap2.put("keyword", key);
-        String poststr = OkHttp.post(url, linkedHashMap2, linkedHashMap);
-
-        Document doc=Jsoup.parse(poststr);
-
+    public String searchContent(String key, boolean quick) {
+        Map<String, String> params = new HashMap<>();
+        params.put("keyword", key);
+        String html = OkHttp.post(URL + "/search", params, getHeader());
+        Element container = Jsoup.parse(html).select(".layui-container").get(1);
+        Elements aElements = container.select("p[class=layui-font-16] > a");
+        Elements pElements = container.select("p[class=layui-font-14 layui-font-gray text-align-right]");
         List<Vod> list = new ArrayList<>();
-        for (Element element : doc.select("div.layui-container div.layui-row")) {
-            String href = element.select("div.layui-col-lg8 a").attr("href");
-            Matcher matcher = regexVid.matcher(href);
-            if (!matcher.find()) continue;
-            String name = element.select("div.layui-col-lg8 p a").text();
-            if (!name.contains(key)) continue;    //如果name中不包括key，直接进行下次循环
-        //    String remark = element.select("div.news_text a p").text().split("\\|")[1].split("：")[1];
-            Vod vod = new Vod();
-            vod.setVodPic("https://inews.gtimg.com/newsapp_bt/0/13263837859/1000");
-            vod.setVodId(matcher.group(1));
-        //    vod.setVodRemarks(remark);
-            vod.setVodName(name);
-            list.add(vod);
+        for (int i = 0; i < aElements.size(); i++) {
+            Element item = aElements.get(i);
+            String vodId = item.attr("href");
+            String name = item.text();
+            String pic = "https://inews.gtimg.com/newsapp_bt/0/13263837859/1000";
+            String remark = pElements.get(i).text();
+            list.add(new Vod(vodId, name, pic, remark));
         }
-            return Result.string(list);
-
-
-
-
-
-
+        return Result.string(list);
     }
 }

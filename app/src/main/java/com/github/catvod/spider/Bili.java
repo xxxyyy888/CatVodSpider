@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.widget.FrameLayout;
@@ -27,8 +28,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -85,12 +84,12 @@ public class Bili extends Spider {
     @Override
     public String homeVideoContent() throws Exception {
         fetchRule();
-        return categoryContent("窗 白噪音", "1", true, new HashMap<>());
+        return categoryContent("越剧", "1", true, new HashMap<>());
     }
 
     @Override
     public String categoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend) throws Exception {
-        String duration = extend.containsKey("duration") ? extend.get("duration") : "0";
+        String duration = extend.containsKey("duration") ? extend.get("duration") : "4";
         if (extend.containsKey("tid")) tid = tid + " " + extend.get("tid");
         String url = "https://api.bilibili.com/x/web-interface/search/type?search_type=video&keyword=" + URLEncoder.encode(tid) + "&duration=" + duration + "&page=" + pg;
         JSONObject resp = new JSONObject(OkHttp.string(url, header));
@@ -201,12 +200,10 @@ public class Bili extends Spider {
     }
 
     private void setCookie(String url) {
-        Map<String, List<String>> respHeader = new HashMap<>();
-        OkHttp.stringNoRedirect(url, header, respHeader);
-        StringBuilder sb = new StringBuilder();
-        for (String value : Objects.requireNonNull(respHeader.get("set-cookie"))) sb.append(value.split(";")[0]).append(";");
-        Init.run(() -> Prefers.put("BiliQRCode", true), 5000);
-        Prefers.put("BiliCookie", sb.toString());
+        StringBuilder cookie = new StringBuilder();
+        String[] aa = Uri.parse(url).getQuery().split("&");
+        for (String a : aa) cookie.append(a).append(";");
+        Prefers.put("BiliCookie", cookie.toString());
         Init.show("請重新進入播放頁");
         stopService();
     }

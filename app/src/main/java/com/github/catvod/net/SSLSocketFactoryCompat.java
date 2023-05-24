@@ -72,6 +72,16 @@ public class SSLSocketFactoryCompat extends SSLSocketFactory {
         }
     }
 
+    public SSLSocketFactoryCompat(X509TrustManager tm) {
+        try {
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, (tm != null) ? new X509TrustManager[]{tm} : null, null);
+            defaultFactory = sslContext.getSocketFactory();
+        } catch (GeneralSecurityException e) {
+            throw new AssertionError(); // The system has no TLS. Just give up.
+        }
+    }
+
     private void upgradeTLS(SSLSocket ssl) {
         if (protocols != null) {
             ssl.setEnabledProtocols(protocols);

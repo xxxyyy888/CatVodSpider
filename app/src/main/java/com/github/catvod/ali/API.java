@@ -20,7 +20,6 @@ import com.github.catvod.bean.ali.Code;
 import com.github.catvod.bean.ali.Data;
 import com.github.catvod.bean.ali.Item;
 import com.github.catvod.bean.ali.OAuth;
-import com.github.catvod.bean.ali.Sorter;
 import com.github.catvod.bean.ali.User;
 import com.github.catvod.crawler.SpiderDebug;
 import com.github.catvod.net.OkHttp;
@@ -40,14 +39,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import okhttp3.Response;
 
 public class API {
 
@@ -62,82 +61,53 @@ public class API {
     private User user;
 
     private static class Loader {
-        static volatile API INSTANCE = new API();   //实例化对象时，会调用无参构造API()，初始化变量
+        static volatile API INSTANCE = new API();
     }
 
-
-    /*
-     *返回当前API类的对象
-     * */
     public static API get() {
         return Loader.INSTANCE;
     }
 
-
-    /*
-     *获取应用程序配置的缓存目录下的文件aliyundrive_user文件
-     * */
     public File getUserCache() {
         return FileUtil.getCacheFile("aliyundrive_user");
     }
 
-
-    /*
-     *获取应用程序配置的缓存目录下的文件aliyundrive_oauth文件
-     * */
     public File getOAuthCache() {
         return FileUtil.getCacheFile("aliyundrive_oauth");
     }
 
-
     private API() {
         tempIds = new ArrayList<>();
-        oauth = OAuth.objectFrom(FileUtil.read(getOAuthCache()));//将读取aliyundrive_oauth文件内字符串转成OAuth类的对象。
-        user = User.objectFrom(FileUtil.read(getUserCache()));//将读取aliyundrive_user文件内字符串转成User类的对象
+        oauth = OAuth.objectFrom(FileUtil.read(getOAuthCache()));
+        user = User.objectFrom(FileUtil.read(getUserCache()));
         quality = new HashMap<>();
         quality.put("4K", "UHD");
         quality.put("2k", "QHD");
         quality.put("超清", "FHD");
         quality.put("高清", "HD");
-        quality.put("标清", "SD");
-        quality.put("流畅", "LD");
+        quality.put("標清", "SD");
+        quality.put("流暢", "LD");
     }
 
-    /*
-     *设置refreshToken
-     * */
     public void setRefreshToken(String token) {
         this.refreshToken = token;
     }
 
-
-
-    /*
-     *获取token，Object对象为所有类的父类，所以可以存储任何类型
-     * 返回的是一个Object数组
-     * */
     public Object[] getToken() {
         Object[] result = new Object[3];
-        result[0] = 200;     //数值型200
-        result[1] = "text/plain";  //字符串
-        result[2] = new ByteArrayInputStream(user.getRefreshToken().getBytes());  //取aliyundrive_user里面refreshToken
+        result[0] = 200;
+        result[1] = "text/plain";
+        result[2] = new ByteArrayInputStream(user.getRefreshToken().getBytes());
         return result;
     }
 
-
-
     public void setShareId(String shareId) {
-        if (!getOAuthCache().exists()) oauth.clean().save();  //如果不存在aliyundrive_oauth文件，清空oauth对象再保存
-        if (!getUserCache().exists()) user.clean().save();//如果不存在aliyundrive_user文件，清空user对象再保存
-        this.shareId = shareId;  //成员变量shareId分享码赋值
+        if (!getOAuthCache().exists()) oauth.clean().save();
+        if (!getUserCache().exists()) user.clean().save();
+        this.shareId = shareId;
         refreshShareToken();
     }
 
-
-    /*
-     *
-     * 返回headers
-     * */
     public HashMap<String, String> getHeader() {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("User-Agent", Utils.CHROME);
@@ -145,39 +115,28 @@ public class API {
         return headers;
     }
 
-
-    /*
-     *
-     * 返回用于认证的headers
-     * */
     private HashMap<String, String> getHeaderAuth() {
         HashMap<String, String> headers = getHeader();
-        headers.put("authorization", user.getAuthorization()); //getAuthorization()方法返回TokenType+AccessToken
+        headers.put("authorization", user.getAuthorization());
         headers.put("x-share-token", shareToken);
+        headers.put("X-Canary", "client=Android,app=adrive,version=v4.3.1");
         return headers;
     }
-
-
 
     private HashMap<String, String> getHeaderOpen() {
         HashMap<String, String> headers = getHeader();
-        headers.put("authorization", oauth.getAuthorization());//getAuthorization()方法返回TokenType+AccessTok
+        headers.put("authorization", oauth.getAuthorization());
         return headers;
     }
-
-
 
     private boolean alist(String url, JSONObject body) {
         OkResult result = OkHttp.postJson(url, body.toString(), getHeader());
         SpiderDebug.log(result.getCode() + "," + url + "," + result.getBody());
         if (isManyRequest(result.getBody())) return false;
-        oauth = OAuth.objectFrom(result.getBody()).save();  //保存
+        oauth = OAuth.objectFrom(result.getBody()).save();
         return true;
     }
 
-   /*
-   * POST方法访问,在url前面加上https://api.aliyundrive.com/
-   * */
     private String post(String url, JSONObject body) {
         url = url.startsWith("https") ? url : "https://api.aliyundrive.com/" + url;
         OkResult result = OkHttp.postJson(url, body.toString(), getHeader());
@@ -185,11 +144,6 @@ public class API {
         return result.getBody();
     }
 
-
-    /*
-     * POST返回的状态码是401的意思：Authorization认证不通过
-     * 429 表示Too Many Requests
-     * */
     private String auth(String url, String json, boolean retry) {
         url = url.startsWith("https") ? url : "https://api.aliyundrive.com/" + url;
         OkResult result = OkHttp.postJson(url, json, getHeaderAuth());
@@ -219,8 +173,6 @@ public class API {
         return false;
     }
 
-
-
     private void refreshShareToken() {
         try {
             SpiderDebug.log("refreshShareToken...");
@@ -231,11 +183,9 @@ public class API {
             shareToken = new JSONObject(result).getString("share_token");
         } catch (Exception e) {
             e.printStackTrace();
-            Init.show("来晚啦，该分享已失效。");
+            Init.show("來晚啦，該分享已失效。");
         }
     }
-
-
 
     private boolean refreshAccessToken() {
         try {
@@ -255,7 +205,7 @@ public class API {
             e.printStackTrace();
             user.clean().save();
             stopService();
-            startFlow();    //会判断是手机则弹出对话框输入token,不是手机则担示扫码
+            startFlow();
             return true;
         } finally {
             while (user.getAccessToken().isEmpty()) SystemClock.sleep(250);
@@ -270,7 +220,6 @@ public class API {
             body.put("scope", "user:base,file:all:read,file:all:write");
             String url = "https://open.aliyundrive.com/oauth/users/authorize?client_id=" + BuildConfig.CLIENT_ID + "&redirect_uri=https://alist.nn.ci/tool/aliyundrive/callback&scope=user:base,file:all:read,file:all:write&state=";
             String result = auth(url, body.toString(), true);
-           // SpiderDebug.log(result);
             return oauthRedirect(Code.objectFrom(result).getCode());
         } catch (Exception e) {
             e.printStackTrace();
@@ -313,13 +262,12 @@ public class API {
         String result = post("adrive/v3/share_link/get_share_by_anonymous", body);
         JSONObject object = new JSONObject(result);
         List<Item> files = new ArrayList<>();
-        LinkedHashMap<String, List<String>> subMap = new LinkedHashMap<>();
-        listFiles(new Item(getParentFileId(fileId, object)), files, subMap);
-        List<String> playFrom = Arrays.asList("原画", "超清", "高清");
+        List<Item> subs = new ArrayList<>();
+        listFiles(new Item(getParentFileId(fileId, object)), files, subs);
+        List<String> playFrom = Arrays.asList("原畫", "超清", "高清");
         List<String> episode = new ArrayList<>();
         List<String> playUrl = new ArrayList<>();
-        Sorter.sort(files);
-        for (Item file : files) episode.add(file.getDisplayName() + "$" + file.getFileId() + findSubs(file.getName(), subMap));
+        for (Item file : files) episode.add(file.getDisplayName() + "$" + file.getFileId() + findSubs(file.getName(), subs));
         for (int i = 0; i < playFrom.size(); i++) playUrl.add(TextUtils.join("#", episode));
         Vod vod = new Vod();
         vod.setVodId(url);
@@ -328,15 +276,15 @@ public class API {
         vod.setVodName(object.getString("share_name"));
         vod.setVodPlayUrl(TextUtils.join("$$$", playUrl));
         vod.setVodPlayFrom(TextUtils.join("$$$", playFrom));
-        vod.setTypeName("阿里云盘");
+        vod.setTypeName("阿里雲盤");
         return vod;
     }
 
-    private void listFiles(Item folder, List<Item> files, LinkedHashMap<String, List<String>> subMap) throws Exception {
-        listFiles(folder, files, subMap, "");
+    private void listFiles(Item folder, List<Item> files, List<Item> subs) throws Exception {
+        listFiles(folder, files, subs, "");
     }
 
-    private void listFiles(Item parent, List<Item> files, LinkedHashMap<String, List<String>> subMap, String marker) throws Exception {
+    private void listFiles(Item parent, List<Item> files, List<Item> subs, String marker) throws Exception {
         JSONObject body = new JSONObject();
         List<Item> folders = new ArrayList<>();
         body.put("limit", 200);
@@ -352,16 +300,14 @@ public class API {
             } else if (file.getCategory().equals("video") || file.getCategory().equals("audio")) {
                 files.add(file.parent(parent.getName()));
             } else if (Utils.isSub(file.getExt())) {
-                String key = Utils.removeExt(file.getName());
-                if (!subMap.containsKey(key)) subMap.put(key, new ArrayList<>());
-                subMap.get(key).add(key + "@@@" + file.getExt() + "@@@" + file.getFileId());
+                subs.add(file);
             }
         }
         if (item.getNextMarker().length() > 0) {
-            listFiles(parent, files, subMap, item.getNextMarker());
+            listFiles(parent, files, subs, item.getNextMarker());
         }
         for (Item folder : folders) {
-            listFiles(folder, files, subMap);
+            listFiles(folder, files, subs);
         }
     }
 
@@ -375,18 +321,19 @@ public class API {
         return "";
     }
 
-    private String findSubs(String name, Map<String, List<String>> subMap) {
-        name = name.substring(0, name.lastIndexOf("."));
-        List<String> subs = subMap.get(name);
-        if (subs != null && subs.size() > 0) return combineSubs(subs);
-        StringBuilder sb = new StringBuilder();
-        for (Map.Entry<String, List<String>> entry : subMap.entrySet()) sb.append(combineSubs(entry.getValue()));
-        return sb.toString();
+    private void pair(String name1, List<Item> items, List<Item> subs) {
+        for (Item item : items) {
+            String name2 = Utils.removeExt(item.getName()).toLowerCase();
+            if (name1.contains(name2) || name2.contains(name1)) subs.add(item);
+        }
     }
 
-    private String combineSubs(List<String> subs) {
+    private String findSubs(String name1, List<Item> items) {
+        List<Item> subs = new ArrayList<>();
+        pair(Utils.removeExt(name1).toLowerCase(), items, subs);
+        if (subs.isEmpty()) subs.addAll(items);
         StringBuilder sb = new StringBuilder();
-        for (String sub : subs) sb.append("+").append(sub);
+        for (Item sub : subs) sb.append("+").append(Utils.removeExt(sub.getName())).append("@@@").append(sub.getExt()).append("@@@").append(sub.getFileId());
         return sb.toString();
     }
 
@@ -491,10 +438,10 @@ public class API {
     }
 
     private void deleteAll() {
-        Iterator<String> iterator = tempIds.iterator();
-        while (iterator.hasNext()) {
-            boolean deleted = delete(iterator.next());
-            if (deleted) iterator.remove();
+        List<String> ids = new ArrayList<>(tempIds);
+        for (String id : ids) {
+            boolean deleted = delete(id);
+            if (deleted) tempIds.remove(id);
         }
     }
 
@@ -510,13 +457,14 @@ public class API {
         }
     }
 
-    public Object[] proxySub(Map<String, String> params) {
+    public Object[] proxySub(Map<String, String> params) throws Exception {
         String fileId = params.get("file_id");
-        String text = OkHttp.string(getDownloadUrl(fileId), getHeaderAuth());
+        Response res = OkHttp.newCall(getDownloadUrl(fileId), getHeaderAuth());
+        byte[] body = Utils.getUTF8(res.body().bytes());
         Object[] result = new Object[3];
         result[0] = 200;
         result[1] = "application/octet-stream";
-        result[2] = new ByteArrayInputStream(text.getBytes());
+        result[2] = new ByteArrayInputStream(body);
         return result;
     }
 
@@ -528,10 +476,6 @@ public class API {
         }
     }
 
-    /*
-    *
-    * 弹出对话窗，請輸入Token
-    * */
     private void showInput() {
         try {
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -563,9 +507,7 @@ public class API {
         Data data = Data.objectFrom(OkHttp.string(url)).getContent().getData();
         Init.run(() -> showQRCode(data));
     }
-/*
-* 显示二维码
-* */
+
     private void showQRCode(Data data) {
         try {
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(Utils.dp2px(240), Utils.dp2px(240));

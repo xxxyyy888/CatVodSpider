@@ -28,6 +28,7 @@ public class Paper extends Ali {
         LinkedHashMap<String,String>  linkedHashMap2 = new LinkedHashMap<>();
         linkedHashMap2.put("action", "search");
         linkedHashMap2.put("from", "web");
+        linkedHashMap2.put("token", "5b91e46fed2ef7a3eac2ed2d8665adb176c2d9");
         linkedHashMap2.put("keyword", key);
 
         String poststr = OkHttp.post("https://gitcafe.net/tool/alipaper/", linkedHashMap2, linkedHashMap);

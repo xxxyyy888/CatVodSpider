@@ -8,6 +8,9 @@ import com.github.catvod.crawler.Spider;
 import com.github.catvod.crawler.SpiderDebug;
 import com.github.catvod.spider.Czsapp;
 import com.github.catvod.spider.Init;
+import com.github.catvod.spider.Kunyu77;
+import com.github.catvod.spider.Notice;
+import com.github.catvod.spider.Paper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,7 +33,12 @@ public class MainActivity extends Activity {
         Init.init(getApplicationContext());
         new Thread(() -> {
             System.out.println("可以开始调试了哦！！！！！！！！！！");
+            Notice notice = new Notice();
+            notice.init(MainActivity.this,"这是一个弹窗通知");
 
+//            paper.setUsername("yunshuche");
+//            paper.setPassword("11223344");
+ //           this.Alisearch(paper, "他是谁", true);
 //            Zhaozy zzy = new Zhaozy();
 //            zzy.setUsername("yunshuche");
 //            zzy.setPassword("11223344");
@@ -75,12 +83,12 @@ public class MainActivity extends Activity {
 //                e.printStackTrace();
 //            }
 //
-            Czsapp app = new Czsapp();
-            try {
-                this.Testspider(app, "他是谁", "", true);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+//            Czsapp app = new Czsapp();
+//            try {
+//                this.Testspider(app, "他是谁", "", true);
+//            } catch (Exception e) {
+//                throw new RuntimeException(e);
+//            }
 //
 //
 //            Kunyu77 kunyu = new Kunyu77();

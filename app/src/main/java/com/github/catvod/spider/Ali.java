@@ -1,14 +1,11 @@
 package com.github.catvod.spider;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import com.github.catvod.ali.API;
 import com.github.catvod.bean.Result;
 import com.github.catvod.crawler.Spider;
-import com.github.catvod.utils.ReflectUtil;
 
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -23,13 +20,7 @@ public class Ali extends Spider {
 
     @Override
     public void init(Context context, String extend) {
-        //适配其他tvbox或者老版本tvbox，要先判断有没有getToken方法，调用setToken也是一样的
-        Method method = ReflectUtil.getMethod(this, "getToken");
-        String token = "";
-        if (method != null) {
-            token = getToken();
-        }
-        API.get().setRefreshToken(TextUtils.isEmpty(token) ? extend : token);
+        API.get().setRefreshToken(extend);
     }
 
     @Override
@@ -46,10 +37,10 @@ public class Ali extends Spider {
     @Override
     public String playerContent(String flag, String id, List<String> vipFlags) {
         String[] ids = id.split("\\+");
-        return flag.equals("原画") ? API.get().playerContent(ids) : API.get().playerContent(ids, flag);
+        return flag.equals("原畫") ? API.get().playerContent(ids) : API.get().playerContent(ids, flag);
     }
 
-    public static Object[] proxy(Map<String, String> params) {
+    public static Object[] proxy(Map<String, String> params) throws Exception {
         String type = params.get("type");
         if (type.equals("sub")) return API.get().proxySub(params);
         if (type.equals("token")) return API.get().getToken();

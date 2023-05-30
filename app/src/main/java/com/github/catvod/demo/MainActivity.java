@@ -33,8 +33,8 @@ public class MainActivity extends Activity {
         Init.init(getApplicationContext());
         new Thread(() -> {
             System.out.println("可以开始调试了哦！！！！！！！！！！");
-            Notice notice = new Notice();
-            notice.init(MainActivity.this,"这是一个弹窗通知");
+//            Notice notice = new Notice();
+//            notice.init(MainActivity.this,"这是一个弹窗通知");
 
 //            paper.setUsername("yunshuche");
 //            paper.setPassword("11223344");

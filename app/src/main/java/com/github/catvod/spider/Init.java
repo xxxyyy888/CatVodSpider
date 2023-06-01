@@ -8,7 +8,9 @@ import android.os.Looper;
 import android.widget.Toast;
 
 import com.github.catvod.crawler.SpiderDebug;
+import com.github.catvod.net.OkHttpUtil;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -73,10 +75,12 @@ public class Init {
      * 因为它不依附于任何对象,既然都没有对象,就谈不上this了
      * */
     public static void init(Context context) {
-          SpiderDebug.log("自定義爬蟲代碼載入成功！");
+        SpiderDebug.log("自定義爬蟲代碼載入成功！");
         get().app = ((Application) context);
-        Notice notice=new Notice();
-        notice.init(context,"你正在使用运输车线路,本线路免费，交流请加qq群：235436873");
+        Notice notice = new Notice();
+        String str = notice.GetResult("https://gitee.com/lekanbox/App/raw/master/ts.txt");
+        notice.init(context, str+";30");
+
     }
 
 
